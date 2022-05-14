@@ -40,9 +40,18 @@
 #define SPO2_CONFIGURATION_VAL        (SPO2_HI_RES_EN | SPO2_SR_100_PER_S | LED_PW_1600_US)
 #define LED_CONFIGURATION_VAL         (RED_LED_CURRENT_20_8_MA | IR_LED_CURRENT_20_8_MA)
 
+#define SAMPLING_TIME_MS   10
+#define WINDOW_SIZE        32
+#define DATA_WINDOW_SIZE   16
+#define HR_VALUES_CNT      256
+#define LED_BUFFER_SIZE    512
+
 void MAX30100_Init(I2C_HandleTypeDef *hi2c, USART_HandleTypeDef *husart);
 void MAX30100_Default_Config(void);
 bool MAX30100_Data_Get(uint16_t *ir, uint16_t *red);
+void MAX30100_Sample_Add(uint16_t val);
+void MAX30100_Measurement_Complete(void);
+void MAX30100_HR_Value_Send(void);
 void MAX30100_Interrupt_Handler(void);
 
 #endif /* INC_MAX30100_H_ */
