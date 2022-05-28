@@ -126,7 +126,7 @@ int main(void)
   {
     if (MAX30100_Data_Get(&ir, &red))
     {
-        MAX30100_Sample_Add(ir);
+      MAX30100_Sample_Add(ir, red);
     }
     /* USER CODE END WHILE */
 
