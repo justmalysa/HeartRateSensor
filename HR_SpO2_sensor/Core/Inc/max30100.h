@@ -41,7 +41,7 @@
 #define LED_CONFIGURATION_VAL         (RED_LED_CURRENT_50_MA | IR_LED_CURRENT_20_8_MA)
 
 
-void MAX30100_Init(I2C_HandleTypeDef *hi2c, USART_HandleTypeDef *husart);
+void MAX30100_Init(I2C_HandleTypeDef *hi2c, UART_HandleTypeDef *huart);
 void MAX30100_Default_Config(void);
 bool MAX30100_Data_Get(uint16_t *ir, uint16_t *red);
 void MAX30100_Sample_Add(uint16_t ir_val, uint16_t red_val);

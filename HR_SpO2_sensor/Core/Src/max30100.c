@@ -10,7 +10,7 @@
 #define LED_BUFFER_SIZE    512
 
 static I2C_HandleTypeDef *i2c;
-static USART_HandleTypeDef *usart;
+static UART_HandleTypeDef *uart;
 
 static uint16_t ir_buffer[LED_BUFFER_SIZE];
 static uint16_t red_buffer[LED_BUFFER_SIZE];
@@ -153,10 +153,10 @@ static void HR_Buffer_Sort(void)
     }
 }
 
-void MAX30100_Init(I2C_HandleTypeDef *hi2c, USART_HandleTypeDef *husart)
+void MAX30100_Init(I2C_HandleTypeDef *hi2c, UART_HandleTypeDef *huart)
 {
     i2c = hi2c;
-    usart = husart;
+    uart = huart;
 
     HAL_StatusTypeDef status;
     uint8_t val = 0x00;
@@ -235,7 +235,7 @@ void MAX30100_HR_SpO2_Send(void)
     size_t bytes = 0;
     bytes = 0;
     bytes += snprintf(&buffer[bytes], sizeof(buffer) - bytes, "HR: %u\nSpO2: %u\n", hr_val, spo2_val);
-    status = HAL_USART_Transmit(usart, (uint8_t *)buffer, bytes, HAL_MAX_DELAY);
+    status = HAL_UART_Transmit(uart, (uint8_t *)buffer, bytes, HAL_MAX_DELAY);
     HAL_ASSERT(status);
 }
 
