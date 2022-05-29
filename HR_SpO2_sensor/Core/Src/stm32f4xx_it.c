@@ -225,7 +225,6 @@ void TIM2_IRQHandler(void)
   /* USER CODE END TIM2_IRQn 0 */
   HAL_TIM_IRQHandler(&htim2);
   /* USER CODE BEGIN TIM2_IRQn 1 */
-  MAX30100_Measurement_Complete();
   /* USER CODE END TIM2_IRQn 1 */
 }
 
@@ -239,7 +238,6 @@ void TIM3_IRQHandler(void)
   /* USER CODE END TIM3_IRQn 0 */
   HAL_TIM_IRQHandler(&htim3);
   /* USER CODE BEGIN TIM3_IRQn 1 */
-  MAX30100_HR_SpO2_Send();
   /* USER CODE END TIM3_IRQn 1 */
 }
 
@@ -258,5 +256,4 @@ void USART1_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
-
 /* USER CODE END 1 */

@@ -49,6 +49,8 @@ TIM_HandleTypeDef htim3;
 UART_HandleTypeDef huart1;
 USART_HandleTypeDef husart2;
 
+static uint8_t rx_data;
+
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -77,6 +79,39 @@ void hal_status_assert(HAL_StatusTypeDef status, size_t line)
 		while (1)
 		{}
 	}
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+    if (htim == &htim2)
+    {
+        MAX30100_Measurement_Complete();
+    }
+    else if (htim == &htim3)
+    {
+        static bool first_callback = true;
+        if (first_callback)
+        {
+            /* Ignore first callback */
+            first_callback = false;
+        }
+        else
+        {
+            MAX30100_HR_SpO2_Send();
+        }
+    }
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    if (huart == &huart1)
+    {
+        HAL_UART_Receive_IT(huart, &rx_data, 1);
+        if (rx_data == 'R')
+        {
+            MAX30100_HR_SpO2_Send();
+        }
+    }
 }
 /* USER CODE END 0 */
 
@@ -121,6 +156,7 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim3);
   MAX30100_Default_Config();
 
+  HAL_UART_Receive_IT(&huart1, &rx_data, 1);
   /* USER CODE END 2 */
 
   /* Infinite loop */

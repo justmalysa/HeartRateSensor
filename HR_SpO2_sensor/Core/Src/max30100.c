@@ -251,4 +251,3 @@ void MAX30100_Interrupt_Handler(void)
         FIFO_Read();
     }
 }
-
