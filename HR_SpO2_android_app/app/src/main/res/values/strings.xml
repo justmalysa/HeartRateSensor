@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">HeartRateSensorApp</string>
     <string name="btnONOFF">BT ON/OFF</string>
+    <string name="enable_discoverable">Enable Dicoverable</string>
+    <string name="btn_discover">Discover</string>
+    <string name="text_1">rev.1.0</string>
 </resources>
