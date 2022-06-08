@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">HeartRateSensorApp</string>
+    <string name="btnONOFF">BT ON/OFF</string>
+</resources>
