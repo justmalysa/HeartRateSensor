@@ -11,15 +11,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     private static final String TAG = "MainActivity";
 
@@ -94,11 +96,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            Log.d(TAG,"onReceive: ACTION FOUND.");
-            if(action.equals(BluetoothDevice.ACTION_FOUND)){
-                BluetoothDevice device = intent.getParcelableExtra (BluetoothDevice.EXTRA_DEVICE);
+            Log.d(TAG, "onReceive: ACTION FOUND.");
+            if (action.equals(BluetoothDevice.ACTION_FOUND)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 mBTDevices.add(device);
-                Log.d(TAG,"onReceive: "+ device.getName() + ": " + device.getAddress());
+
+                Log.d(TAG, "onReceive: " + device.getName() + ": " + device.getAddress());
                 mDeviceListAdapter = new DeviceListAdapter(context, R.layout.device_adapter_view,mBTDevices);
                 lvNewDevices.setAdapter(mDeviceListAdapter);
             }
@@ -106,11 +109,39 @@ public class MainActivity extends AppCompatActivity {
     };
 
 
+    private final BroadcastReceiver mBroadcastReceiver4 = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+
+            if(action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED)){
+                BluetoothDevice mDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+
+                if(mDevice.getBondState() == BluetoothDevice.BOND_BONDED){
+                    Log.d(TAG,"BroadcastReceiver: BOND_BONDED.");
+                }
+                if(mDevice.getBondState() == BluetoothDevice.BOND_BONDING){
+                    Log.d(TAG,"BroadcastReceiver: BOND_BONDING.");
+                }
+                if(mDevice.getBondState() == BluetoothDevice.BOND_NONE) {
+                    Log.d(TAG,"BroadcastReceiver: BOND_NONE.");
+                }
+
+            }
+        }
+    };
+
+
+
+
     @Override
     protected void onDestroy() {
         Log.d(TAG, "onDestroy: called.");
         super.onDestroy();
         unregisterReceiver(mBroadcastReceiver1);
+        unregisterReceiver(mBroadcastReceiver2);
+        unregisterReceiver(mBroadcastReceiver3);
+        unregisterReceiver(mBroadcastReceiver4);
     }
 
 
@@ -123,7 +154,12 @@ public class MainActivity extends AppCompatActivity {
         lvNewDevices = (ListView) findViewById(R.id.lvNewDevices);
         mBTDevices = new ArrayList<>();
 
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+        registerReceiver(mBroadcastReceiver4,filter);
+
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        lvNewDevices.setOnItemClickListener(MainActivity.this);
 
         btnONOFF.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -175,9 +211,9 @@ public class MainActivity extends AppCompatActivity {
         //tutaj trzeba by dodać co jak w 2.37 minuta film: https://www.youtube.com/watch?v=hv_-tX1VwXE&list=PLgCYzUzKIBE8KHMzpp6JITZ2JxTgWqDH2&index=3&ab_channel=CodingWithMitch
         if (mBluetoothAdapter.isDiscovering()) {
             mBluetoothAdapter.cancelDiscovery();
-            Log.d(TAG, "btnDiscover: Canceling discoery.");
+            Log.d(TAG, "btnDiscover: Canceling discovery.");
 
-            //checkBTPermissions()?;
+            checkBTPermissions();
 
             mBluetoothAdapter.startDiscovery();
             IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
@@ -185,12 +221,47 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        if(!mBluetoothAdapter.isDiscovering()){
-            //checkBTPermissions()?;
+        if (!mBluetoothAdapter.isDiscovering()) {
+
+            checkBTPermissions();
+
             mBluetoothAdapter.startDiscovery();
             IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
             registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
         }
+    }
+
+    private void checkBTPermissions(){
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
+            int permissionCheck = this.checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
+            permissionCheck+= this.checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION");
+            if(permissionCheck !=0){
+
+                this.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},1001);
+
+            }
+
+        }else{
+            Log.d(TAG,"checkBTPermissions: No need to check permissions, SDK version < LOLLIPOP.");
+        }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        mBluetoothAdapter.cancelDiscovery();
+
+        Log.d(TAG,"onItemClick: You clicked on a device.");
+        String deviceName = mBTDevices.get(position).getName();
+        String deviceAddress = mBTDevices.get(position).getAddress();
+
+        Log.d(TAG,"onItemClick: deviceName = "+ deviceName);
+        Log.d(TAG,"onItemClick: deviceAddress = "+ deviceAddress);
+
+        if(Build.VERSION.SDK_INT> Build.VERSION_CODES.JELLY_BEAN_MR2){
+            Log.d(TAG,"Trying to pair with" + deviceName);
+            mBTDevices.get(position).createBond();
+        }
+
     }
 }
 
