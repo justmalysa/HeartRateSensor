@@ -151,6 +151,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         setContentView(R.layout.activity_main);
         Button btnONOFF = (Button) findViewById(R.id.btnONOFF);
         btnEnableDisable_Discoverable = (Button) findViewById(R.id.btnDiscoverable_on_off);
+        Button btnDiscover = (Button) findViewById(R.id.btnFindUnpairedDevices);
+
+        //UWAGA BRAKUJE TYPU POWYZEJ 2 LINIJKI + PRZYCISKU DISCOVER
         lvNewDevices = (ListView) findViewById(R.id.lvNewDevices);
         mBTDevices = new ArrayList<>();
 
@@ -208,7 +211,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         Log.d(TAG, "btnDiscover: Looking for unpaired devices.");
 
 
-        //tutaj trzeba by dodać co jak w 2.37 minuta film: https://www.youtube.com/watch?v=hv_-tX1VwXE&list=PLgCYzUzKIBE8KHMzpp6JITZ2JxTgWqDH2&index=3&ab_channel=CodingWithMitch
         if (mBluetoothAdapter.isDiscovering()) {
             mBluetoothAdapter.cancelDiscovery();
             Log.d(TAG, "btnDiscover: Canceling discovery.");
