@@ -101,6 +101,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 mBTDevices.add(device);
 
+
+
+
                 Log.d(TAG, "onReceive: " + device.getName() + ": " + device.getAddress());
                 mDeviceListAdapter = new DeviceListAdapter(context, R.layout.device_adapter_view,mBTDevices);
                 lvNewDevices.setAdapter(mDeviceListAdapter);
@@ -217,19 +220,22 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
             checkBTPermissions();
 
-            mBluetoothAdapter.startDiscovery();
+
             IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
             registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
-
+            mBluetoothAdapter.startDiscovery();
         }
 
         if (!mBluetoothAdapter.isDiscovering()) {
 
             checkBTPermissions();
 
-            mBluetoothAdapter.startDiscovery();
+
             IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
             registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
+            mBluetoothAdapter.startDiscovery();
+            Log.d(TAG, "discovery is started! XDXD");
+
         }
     }
 
