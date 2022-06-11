@@ -218,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             mBluetoothAdapter.cancelDiscovery();
             Log.d(TAG, "btnDiscover: Canceling discovery.");
 
-            //checkBTPermissions();
+            checkBTPermissions();
 
             mBluetoothAdapter.startDiscovery();
             IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         if (!mBluetoothAdapter.isDiscovering()) {
 
-            //checkBTPermissions();
+            checkBTPermissions();
             //mBluetoothAdapter.startDiscovery();
 
             if(mBluetoothAdapter.startDiscovery() == false)

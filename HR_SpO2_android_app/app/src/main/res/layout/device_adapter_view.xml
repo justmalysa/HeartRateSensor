@@ -1,20 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:id="@+id/tvDeviceName"
-        android:textSize="15sp"/>
+        android:layout_width="388dp"
+        android:layout_height="30dp"
+        android:background="@color/design_default_color_error"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/tvDeviceAddress"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.304"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:id="@+id/tvDeviceAddress"
-        android:textSize="15sp"/>
+        android:layout_width="388dp"
+        android:layout_height="33dp"
+        android:layout_marginBottom="536dp"
+        android:background="@color/purple_200"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.304"
+        app:layout_constraintStart_toStartOf="parent" />
 
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
