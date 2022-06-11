@@ -4,6 +4,7 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.RequiresPermission;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
@@ -21,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -37,6 +39,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     Button btnStartConnection;
     Button btnSend;
+
+    TextView incomingMessages;
+    StringBuilder messages;
+
 
     EditText etSend;
 
@@ -182,6 +188,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         btnSend = (Button) findViewById(R.id.btnSend);
         etSend = (EditText) findViewById(R.id.editText);
 
+        incomingMessages = (TextView) findViewById(R.id.incomingMessage);
+        messages = new StringBuilder();
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, new IntentFilter("incomingMessage"));
 
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         registerReceiver(mBroadcastReceiver4,filter);
@@ -210,10 +220,23 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 byte[] bytes = etSend.getText().toString().getBytes(Charset.defaultCharset());
                 //take The message that was taken from user !!!
                 mBluetoothConnection.write(bytes);
+
+                etSend.setText("");
             }
         });
     }
 
+
+
+    BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String text = intent.getStringExtra("theMessage");
+
+            messages.append(text + "\n");
+            incomingMessages.setText(messages);
+        }
+    };
     public void startConnection(){
 
         startBTConnection(mBTDevice, MY_UUID_INSECURE);

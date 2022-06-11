@@ -73,14 +73,8 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnDiscoverable_on_off"
-        tools:background="@color/teal_700" >
+        tools:background="@color/teal_700" />
 
-        <TextView
-            android:id="@+id/incomingMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="Incoming Messages" />
-    </ListView>
 
     <Button
         android:id="@+id/btnStartConnection"
@@ -126,5 +120,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editText"
         app:layout_constraintVertical_bias="0.463" />
+
+    <TextView
+        android:id="@+id/incomingMessage"
+        android:layout_width="233dp"
+        android:layout_height="90dp"
+        android:text="Incoming Messages"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_check_pulse"
+        app:layout_constraintHorizontal_bias="0.551"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
