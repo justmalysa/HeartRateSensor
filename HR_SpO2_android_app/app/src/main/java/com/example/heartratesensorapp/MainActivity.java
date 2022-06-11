@@ -19,9 +19,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
@@ -29,6 +32,19 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     BluetoothAdapter mBluetoothAdapter;
     Button btnEnableDisable_Discoverable;
+
+    BluetoothConnectionService mBluetoothConnection;
+
+    Button btnStartConnection;
+    Button btnSend;
+
+    EditText etSend;
+
+    private static final UUID MY_UUID_INSECURE =
+            UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+
+    BluetoothDevice mBTDevice;
+
     public ArrayList<BluetoothDevice> mBTDevices = new ArrayList<>();
     public DeviceListAdapter mDeviceListAdapter;
     ListView lvNewDevices;
@@ -122,6 +138,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
                 if(mDevice.getBondState() == BluetoothDevice.BOND_BONDED){
                     Log.d(TAG,"BroadcastReceiver: BOND_BONDED.");
+                    mBTDevice = mDevice;
+
                 }
                 if(mDevice.getBondState() == BluetoothDevice.BOND_BONDING){
                     Log.d(TAG,"BroadcastReceiver: BOND_BONDING.");
@@ -160,6 +178,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         lvNewDevices = (ListView) findViewById(R.id.lvNewDevices);
         mBTDevices = new ArrayList<>();
 
+        btnStartConnection = (Button) findViewById(R.id.btnStartConnection);
+        btnSend = (Button) findViewById(R.id.btnSend);
+        etSend = (EditText) findViewById(R.id.editText);
+
+
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         registerReceiver(mBroadcastReceiver4,filter);
 
@@ -175,8 +198,33 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         });
 
+        btnStartConnection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view){
+                startConnection();
+            }
+        });
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                byte[] bytes = etSend.getText().toString().getBytes(Charset.defaultCharset());
+                //take The message that was taken from user !!!
+                mBluetoothConnection.write(bytes);
+            }
+        });
     }
 
+    public void startConnection(){
+
+        startBTConnection(mBTDevice, MY_UUID_INSECURE);
+    }
+
+    public void startBTConnection(BluetoothDevice device, UUID uuid){
+        Log.d(TAG,"startBTConnection: Initializing RFCOMM Bluetooth connection");
+
+        mBluetoothConnection.startClient(device,uuid);
+
+    }
 
     public void enable_disable_BT() {
         if (mBluetoothAdapter == null) {
@@ -278,6 +326,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         if(Build.VERSION.SDK_INT> Build.VERSION_CODES.JELLY_BEAN_MR2){
             Log.d(TAG,"Trying to pair with" + deviceName);
             mBTDevices.get(position).createBond();
+
+            mBTDevice = mBTDevices.get(position);
+            mBluetoothConnection = new BluetoothConnectionService(MainActivity.this);
         }
 
     }
