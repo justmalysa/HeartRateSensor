@@ -1,5 +1,7 @@
 package com.example.heartratesensorapp;
 
+import androidx.annotation.RequiresApi;
+import androidx.annotation.RequiresPermission;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         Log.d(TAG, "mBroadcastReceiver1: STATE TURNING OFF");
                         break;
                     case BluetoothAdapter.STATE_ON:
-                        Log.d(TAG, "onReceive: STATE ON");
+                        Log.d(TAG, "mBroadcastReceiver1: STATE ON");
                         break;
                     case BluetoothAdapter.STATE_TURNING_ON:
                         Log.d(TAG, "mBroadcastReceiver1: STATE TURNING ON");
@@ -102,8 +104,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 mBTDevices.add(device);
 
 
-
-
                 Log.d(TAG, "onReceive: " + device.getName() + ": " + device.getAddress());
                 mDeviceListAdapter = new DeviceListAdapter(context, R.layout.device_adapter_view,mBTDevices);
                 lvNewDevices.setAdapter(mDeviceListAdapter);
@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         setContentView(R.layout.activity_main);
         Button btnONOFF = (Button) findViewById(R.id.btnONOFF);
         btnEnableDisable_Discoverable = (Button) findViewById(R.id.btnDiscoverable_on_off);
-        Button btnDiscover = (Button) findViewById(R.id.btnFindUnpairedDevices);
+        //Button btnDiscover = (Button) findViewById(R.id.btnFindUnpairedDevices);
 
         //UWAGA BRAKUJE TYPU POWYZEJ 2 LINIJKI + PRZYCISKU DISCOVER
         lvNewDevices = (ListView) findViewById(R.id.lvNewDevices);
@@ -220,27 +220,37 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
             checkBTPermissions();
 
-
+            mBluetoothAdapter.startDiscovery();
             IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
             registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
-            mBluetoothAdapter.startDiscovery();
         }
 
         if (!mBluetoothAdapter.isDiscovering()) {
 
             checkBTPermissions();
+            //mBluetoothAdapter.startDiscovery();
 
-
+            if(mBluetoothAdapter.startDiscovery() == false)
+            {
+                Log.d(TAG, "mBluetoothAdapter.startDiscovery(): disocvery DIDN'T START!!");
+            }
+            else
+            {
+                Log.d(TAG, "mBluetoothAdapter.startDiscovery(): disocvery started properly ");
+            }
             IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
             registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
-            mBluetoothAdapter.startDiscovery();
-            Log.d(TAG, "discovery is started! XDXD");
+
+
 
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void checkBTPermissions(){
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
+            Log.d(TAG,"checkBTPermissions: Checking required permissions...");
+
             int permissionCheck = this.checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
             permissionCheck+= this.checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION");
             if(permissionCheck !=0){
