@@ -65,8 +65,8 @@
 
     <ListView
         android:id="@+id/lvNewDevices"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_width="410dp"
+        android:layout_height="154dp"
         android:layout_marginTop="20dp"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"

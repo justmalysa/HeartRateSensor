@@ -36,11 +36,11 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice> {
 
             if (deviceName != null) {
                 deviceName.setText(device.getName());
-                deviceName.setText("tekst_jakikolwiek 1");
+                //deviceName.setText("tekst_jakikolwiek 1");
              }
              if(deviceAdress != null){
                  deviceAdress.setText(device.getAddress());
-                 deviceAdress.setText("tekst_ jakikolwiek 2");
+                 //deviceAdress.setText("tekst_ jakikolwiek 2");
              }
 
          }
