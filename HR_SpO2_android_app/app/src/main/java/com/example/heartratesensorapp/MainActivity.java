@@ -169,6 +169,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         unregisterReceiver(mBroadcastReceiver2);
         unregisterReceiver(mBroadcastReceiver3);
         unregisterReceiver(mBroadcastReceiver4);
+        unregisterReceiver(mReceiver);
     }
 
 
@@ -232,9 +233,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         @Override
         public void onReceive(Context context, Intent intent) {
             String text = intent.getStringExtra("theMessage");
+            //String text = intent.putExtra("theMessage", edt_name.getText().toString());
 
-            messages.append(text + "\n");
+            //messages.append(text + "\n");
+            messages.append(text);
             incomingMessages.setText(messages);
+
         }
     };
     public void startConnection(){

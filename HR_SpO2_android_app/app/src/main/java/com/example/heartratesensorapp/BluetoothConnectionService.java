@@ -202,7 +202,7 @@ public class BluetoothConnectionService {
                     Log.d(TAG,"InputStream: "+ incomingMessage);
 
                     Intent incomingMessageIntent = new Intent("incomingMessage");
-                    incomingMessageIntent.putExtra("the Message ",incomingMessage);
+                    incomingMessageIntent.putExtra("theMessage",incomingMessage);
                     LocalBroadcastManager.getInstance(mContext).sendBroadcast(incomingMessageIntent);
 
 
