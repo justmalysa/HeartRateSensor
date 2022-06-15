@@ -1,5 +1,6 @@
 package com.example.heartratesensorapp;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.RequiresPermission;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,6 +25,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+
+
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -42,20 +51,34 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     Button btnStartConnection;
     Button btnSend;
     Button btn_check_pulse;
+    Button update_graph_btn;
+
+
 
 
     TextView incomingMessages;
     StringBuilder messages;
 
-    //int[] HR_values = new int[6];
-    //int[] SPo2_values = new int[6];
 
 
     List<Integer> HR_values = new ArrayList<>();
     List<Integer> SPo2_values = new ArrayList<>();
 
+    LineChart lineChart;
+
+
 
     EditText etSend;
+
+
+    public ArrayList<String> xAXES = new ArrayList<>();
+
+    public ArrayList<Entry> yAXES_HR = new ArrayList<>();
+    public ArrayList<Entry> yAXES_Spo2 = new ArrayList<>();
+
+
+
+
 
     private static final UUID MY_UUID_INSECURE =
             UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
@@ -185,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Button btnONOFF = (Button) findViewById(R.id.btnONOFF);
@@ -201,8 +224,57 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         btnSend = (Button) findViewById(R.id.btnSend);
         etSend = (EditText) findViewById(R.id.editText);
         btn_check_pulse = (Button) findViewById(R.id.btn_check_pulse);
+        update_graph_btn = (Button) findViewById(R.id.update_graph_btn);
 
         incomingMessages = (TextView) findViewById(R.id.incomingMessage);
+
+        lineChart = (LineChart) findViewById(R.id.lineChart);
+
+
+
+        /*
+        double x=0.0;
+
+        for (int i=0;i<HR_values.size()-1;i++) {
+            x=x + 1.0;
+
+
+            float hr_val_fl = HR_values.get(i);
+            float sp_val_fl = SPo2_values.get(i);
+            yAXES_HR.add(new Entry(hr_val_fl,i));
+            yAXES_Spo2.add(new Entry(sp_val_fl,i));
+            xAXES.add(i,String.valueOf(x));
+
+        }
+        String[] xaxes = new String[xAXES.size()];
+            for(int i=0;i<xAXES.size();i++)
+            {
+                xaxes[i] = xAXES.get(i).toString();
+            }
+
+            ArrayList<ILineDataSet> lineDataSets = new ArrayList<>();
+
+            LineDataSet lineDataSet1 = new LineDataSet(yAXES_HR,"HR data");
+            lineDataSet1.setDrawCircles(false);
+            lineDataSet1.setCircleColor(Color.RED);
+
+        LineDataSet lineDataSet2 = new LineDataSet(yAXES_Spo2,"SPo2 data");
+        lineDataSet2.setDrawCircles(false);
+        lineDataSet2.setCircleColor(Color.BLUE);
+
+        lineDataSets.add(lineDataSet1);
+        lineDataSets.add(lineDataSet2);
+
+        lineChart.setData(new LineData(lineDataSets));
+        //lineChart.setVisibleXRangeMaximum(65f);
+
+        */
+
+
+
+
+
+
         messages = new StringBuilder();
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, new IntentFilter("incomingMessage"));
@@ -265,8 +337,29 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
 
+        update_graph_btn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+
+                print_graph2();
+
+            }
+
+
+        });
+
+
+
+
+
+
+
 
     }
+
+
+
+
 
 
 
@@ -311,7 +404,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
                 Log.d(TAG, "tablica HR= "+String.valueOf(HR_values) +"tablica SpO2= "+ String.valueOf(SPo2_values));
 
-                if(HR_values.size()==6 && SPo2_values.size()==6)
+                if(HR_values.size()==100 && SPo2_values.size()==100)
                 {
                     //na ten moment czyści po zapisaniu 6ciu wartosci - do poprawki!
                  HR_values.clear();
@@ -447,9 +540,95 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
 
+public void print_graph(){
+    double x=0.0;
+    //
+    for (int i=0;i<HR_values.size()-1;i++) {
+        x=x + 1.0;
+
+
+        float hr_val_fl = HR_values.get(i);
+        float sp_val_fl = SPo2_values.get(i);
+        yAXES_HR.add(new Entry(hr_val_fl,i));
+        yAXES_Spo2.add(new Entry(sp_val_fl,i));
+        xAXES.add(i,String.valueOf(x));
+
+    }
+    String[] xaxes = new String[xAXES.size()];
+    for(int i=0;i<xAXES.size();i++)
+    {
+        xaxes[i] = xAXES.get(i).toString();
+    }
+
+    ArrayList<ILineDataSet> lineDataSets = new ArrayList<>();
+
+    LineDataSet lineDataSet1 = new LineDataSet(yAXES_HR,"HR data");
+    lineDataSet1.setDrawCircles(false);
+    lineDataSet1.setCircleColor(Color.RED);
+
+    LineDataSet lineDataSet2 = new LineDataSet(yAXES_Spo2,"SPo2 data");
+    lineDataSet2.setDrawCircles(false);
+    lineDataSet2.setCircleColor(Color.BLUE);
+
+    lineDataSets.add(lineDataSet1);
+    lineDataSets.add(lineDataSet2);
+
+    lineChart.setData(new LineData(lineDataSets));
+
+
+}
+
+    public void print_graph2(){
+        double x=0.0;
+        //
+        for (int i=0;i<SPo2_values.size()-1;i++) {
+            x=x + 1.0;
+
+
+            float hr_val_fl = HR_values.get(i);
+            float sp_val_fl = SPo2_values.get(i);
+            yAXES_HR.add(new Entry(i,hr_val_fl));
+            yAXES_Spo2.add(new Entry(i,sp_val_fl));
+            xAXES.add(i,String.valueOf(x));
+
+        }
+        String[] xaxes = new String[xAXES.size()];
+        for(int i=0;i<xAXES.size();i++)
+        {
+            xaxes[i] = xAXES.get(i).toString();
+        }
+
+        ArrayList<ILineDataSet> lineDataSets = new ArrayList<>();
+
+        LineDataSet lineDataSet1 = new LineDataSet(yAXES_HR,"HR data");
+        //lineDataSet1.setDrawCircles(false);
+
+
+        LineDataSet lineDataSet2 = new LineDataSet(yAXES_Spo2,"SPo2 data");
+        //lineDataSet2.setDrawCircles(false);
+        //lineDataSet2.setCircleColor(Color.BLUE);
+
+        //lineDataSets.add(lineDataSet1);
+        //lineDataSets.add(lineDataSet2);
+        //lineChart.addDataSet(dataSet);
+
+        lineChart.setData(new LineData(lineDataSet1));
+        lineChart.invalidate();
+
+        lineChart.setData(new LineData(lineDataSet2));
+        lineChart.invalidate();
+
+
+        lineChart.setNoDataText("Data not Available");
+        lineDataSet1.setColor(Color.RED);
+        lineDataSet2.setCircleColor(Color.BLUE);
+
+        lineDataSet1.setFormLineWidth(3);
+        lineDataSet2.setFormLineWidth(3);
 
 
 
+    }
     
 }
 
