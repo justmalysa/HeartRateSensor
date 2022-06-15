@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     Button btnStartConnection;
     Button btnSend;
+    Button btn_check_pulse;
 
     TextView incomingMessages;
     StringBuilder messages;
@@ -188,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         btnStartConnection = (Button) findViewById(R.id.btnStartConnection);
         btnSend = (Button) findViewById(R.id.btnSend);
         etSend = (EditText) findViewById(R.id.editText);
+        btn_check_pulse = (Button) findViewById(R.id.btn_check_pulse);
 
         incomingMessages = (TextView) findViewById(R.id.incomingMessage);
         messages = new StringBuilder();
@@ -225,6 +227,33 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 etSend.setText("");
             }
         });
+
+
+        btn_check_pulse.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                String request;
+                request = "R";
+
+                byte[] bytes = request.getBytes(Charset.defaultCharset());
+                //take The message that was taken from user !!!
+                messages.setLength(0);
+                incomingMessages.setText("");
+
+                //everytime user clicks burrons check pulse
+                //need to clean up the container before another pulse display!
+                //incomingMessages.setText("");
+                //send request to STM32:
+                mBluetoothConnection.write(bytes);
+
+            }
+
+
+        });
+
+
+
+
     }
 
 
@@ -237,7 +266,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
             //messages.append(text + "\n");
             messages.append(text);
-            incomingMessages.setText(messages);
+            incomingMessages.setText(messages + "BPM");
 
         }
     };
