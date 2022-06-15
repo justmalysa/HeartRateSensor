@@ -26,6 +26,8 @@ import android.widget.TextView;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
@@ -33,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private static final String TAG = "MainActivity";
 
     BluetoothAdapter mBluetoothAdapter;
-    Button btnEnableDisable_Discoverable;
+    //Button btnEnableDisable_Discoverable;
 
     BluetoothConnectionService mBluetoothConnection;
 
@@ -41,8 +43,16 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     Button btnSend;
     Button btn_check_pulse;
 
+
     TextView incomingMessages;
     StringBuilder messages;
+
+    //int[] HR_values = new int[6];
+    //int[] SPo2_values = new int[6];
+
+
+    List<Integer> HR_values = new ArrayList<>();
+    List<Integer> SPo2_values = new ArrayList<>();
 
 
     EditText etSend;
@@ -179,7 +189,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Button btnONOFF = (Button) findViewById(R.id.btnONOFF);
-        btnEnableDisable_Discoverable = (Button) findViewById(R.id.btnDiscoverable_on_off);
+
+        //btnEnableDisable_Discoverable = (Button) findViewById(R.id.btnDiscoverable_on_off);
         //Button btnDiscover = (Button) findViewById(R.id.btnFindUnpairedDevices);
 
         //UWAGA BRAKUJE TYPU POWYZEJ 2 LINIJKI + PRZYCISKU DISCOVER
@@ -237,8 +248,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
                 byte[] bytes = request.getBytes(Charset.defaultCharset());
                 //take The message that was taken from user !!!
-                messages.setLength(0);
-                incomingMessages.setText("");
+
+                //messages.setLength(0);
+                //incomingMessages.setText("");
 
                 //everytime user clicks burrons check pulse
                 //need to clean up the container before another pulse display!
@@ -264,9 +276,51 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             String text = intent.getStringExtra("theMessage");
             //String text = intent.putExtra("theMessage", edt_name.getText().toString());
 
-            //messages.append(text + "\n");
+
+
             messages.append(text);
-            incomingMessages.setText(messages + "BPM");
+
+
+            //format wiadomosci zawsze stały:
+            //sp099hr080 > do rysowania wykresu!
+            //hr00000080 > do rysowania tętna
+            //stala dlugosc wiadomosci!!!
+            if(messages.length() == 10)
+            {
+                int HR_data;
+                int Spo2_data;
+                String data = messages.toString();
+                char[] array = data.toCharArray();
+                HR_data = (Character.getNumericValue(array[7]) *100 + Character.getNumericValue(array[8])*10 +Character.getNumericValue(array[9]));
+
+                Spo2_data = (Character.getNumericValue(array[2])*100 + Character.getNumericValue(array[3])*10 + Character.getNumericValue(array[4]));
+
+                Log.d(TAG, String.valueOf(HR_data) +" "+ String.valueOf(Spo2_data));
+
+                Log.d(TAG, "HR data request was send");
+                //sytuacja gdy wysylane jest na zyczenie pojedynczy BPM a nie na bierząco!
+                if(array[0]=='h') {
+                    //gdy otrzymano wiadomosc zgodnie z requestem!
+                    incomingMessages.setText(String.valueOf(HR_data) + " BPM");
+                }
+                messages.setLength(0);
+
+                HR_values.add(HR_data);
+
+                SPo2_values.add(Spo2_data);
+
+                Log.d(TAG, "tablica HR= "+String.valueOf(HR_values) +"tablica SpO2= "+ String.valueOf(SPo2_values));
+
+                if(HR_values.size()==6 && SPo2_values.size()==6)
+                {
+                    //na ten moment czyści po zapisaniu 6ciu wartosci - do poprawki!
+                 HR_values.clear();
+                 SPo2_values.clear();
+                }
+
+            }
+
+
 
         }
     };
@@ -303,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         }
     }
-
+/*
     public void btnEnableDisable_Discoverable(View view) {
         Log.d(TAG, "btnEnableDisable_Discoverable: Making device discoverable for 300 seconds.");
         Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
@@ -313,6 +367,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         IntentFilter intentFilter = new IntentFilter(mBluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
         registerReceiver(mBroadcastReceiver2, intentFilter);
     }
+
+ */
 
     public void btnDiscover(View view) {
         Log.d(TAG, "btnDiscover: Looking for unpaired devices.");
