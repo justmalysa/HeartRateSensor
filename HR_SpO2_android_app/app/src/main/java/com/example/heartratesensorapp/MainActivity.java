@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     BluetoothConnectionService mBluetoothConnection;
 
     Button btnStartConnection;
-    Button btnSend;
+    //Button btnSend;
     Button btn_check_pulse;
     Button update_graph_btn;
 
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
 
-    EditText etSend;
+    //EditText etSend;
 
 
     public ArrayList<String> xAXES = new ArrayList<>();
@@ -221,8 +221,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         mBTDevices = new ArrayList<>();
 
         btnStartConnection = (Button) findViewById(R.id.btnStartConnection);
-        btnSend = (Button) findViewById(R.id.btnSend);
-        etSend = (EditText) findViewById(R.id.editText);
+        //btnSend = (Button) findViewById(R.id.btnSend);
+        //etSend = (EditText) findViewById(R.id.editText);
         btn_check_pulse = (Button) findViewById(R.id.btn_check_pulse);
         update_graph_btn = (Button) findViewById(R.id.update_graph_btn);
 
@@ -300,16 +300,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 startConnection();
             }
         });
-        btnSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                byte[] bytes = etSend.getText().toString().getBytes(Charset.defaultCharset());
-                //take The message that was taken from user !!!
-                mBluetoothConnection.write(bytes);
 
-                etSend.setText("");
-            }
-        });
 
 
         btn_check_pulse.setOnClickListener(new View.OnClickListener(){
@@ -578,7 +569,7 @@ public void print_graph(){
 
 }
 
-    public void print_graph2(){
+    public void print_graph3(){
         double x=0.0;
         //
         for (int i=0;i<SPo2_values.size()-1;i++) {
@@ -597,6 +588,10 @@ public void print_graph(){
         {
             xaxes[i] = xAXES.get(i).toString();
         }
+        Log.d(TAG,"x_axis: "+ String.valueOf(xAXES));
+        Log.d(TAG,"y_axis HR: "+String.valueOf(yAXES_HR));
+        Log.d(TAG,"y_axis SPo2: "+String.valueOf(yAXES_Spo2));
+
 
         ArrayList<ILineDataSet> lineDataSets = new ArrayList<>();
 
@@ -627,6 +622,56 @@ public void print_graph(){
         lineDataSet2.setFormLineWidth(3);
 
 
+
+    }
+
+    public void print_graph2(){
+
+        LineDataSet lineDataSet1 = new LineDataSet(lineChartDataSet('H'),"HR data");
+        ArrayList<ILineDataSet> iLineDataSets = new ArrayList<>();
+        iLineDataSets.add(lineDataSet1);
+        lineDataSet1.setColor(Color.RED);
+
+
+        LineDataSet lineDataSet2 = new LineDataSet(lineChartDataSet('S'),"SPo2 data");
+        iLineDataSets.add(lineDataSet2);
+        lineDataSet2.setCircleColor(Color.BLUE);
+
+        lineDataSet1.setFormLineWidth(3);
+        lineDataSet2.setFormLineWidth(3);
+
+
+
+
+
+
+        LineData lineData = new LineData(iLineDataSets);
+        lineChart.setData(lineData);
+        lineChart.invalidate();
+
+
+
+    }
+
+    //return
+    private ArrayList<Entry> lineChartDataSet(char flag) {
+
+        ArrayList<Entry> dataSet = new ArrayList<Entry>();
+
+        if(flag=='H') {
+            for (int i = 0; i < SPo2_values.size() - 1; i++) {
+                dataSet.add(new Entry(i, HR_values.get(i)));
+            }
+        }
+        if(flag=='S') {
+            for (int i = 0; i < SPo2_values.size() - 1; i++) {
+                dataSet.add(new Entry(i, SPo2_values.get(i)));
+            }
+
+        }
+
+
+        return dataSet;
 
     }
     
