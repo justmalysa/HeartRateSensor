@@ -2,12 +2,13 @@
 #include <string.h>
 #include <math.h>
 
-#define SAMPLING_TIME_MS   10
-#define WINDOW_SIZE        32
-#define DATA_WINDOW_SIZE   16
-#define HR_VALUES_CNT      256
-#define SPO2_VALUES_CNT    2048
-#define LED_BUFFER_SIZE    512
+#define SAMPLING_TIME_MS      10
+#define WINDOW_SIZE           32
+#define DATA_WINDOW_SIZE      16
+#define HR_VALUES_CNT         256
+#define SPO2_VALUES_CNT       2048
+#define LED_BUFFER_SIZE       512
+#define MEASUREMENT_PERIOD    15
 
 static I2C_HandleTypeDef *i2c;
 static UART_HandleTypeDef *uart;
@@ -219,9 +220,9 @@ void MAX30100_Measurement_Complete(void)
     HR_Buffer_Sort();
     hr_val = hr_buffer[hr_index / 2];
 
-    float AC_red = sqrt((float)red_sum / 20);
+    float AC_red = sqrt((float)red_sum / MEASUREMENT_PERIOD);
     float DC_red = (float)red_sum / spo2_index;
-    float AC_ir = sqrt((float)ir_sum / 20);
+    float AC_ir = sqrt((float)ir_sum / MEASUREMENT_PERIOD);
     float DC_ir = (float)ir_sum / spo2_index;
     spo2_val = 110.0 - 25.0 * ((AC_red / DC_red) / (AC_ir / DC_ir));
 
