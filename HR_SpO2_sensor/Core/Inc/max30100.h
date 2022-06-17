@@ -41,12 +41,43 @@
 #define LED_CONFIGURATION_VAL         (RED_LED_CURRENT_50_MA | IR_LED_CURRENT_20_8_MA)
 
 
+/**
+ * @brief Function for initializing sensor.
+ *
+ * @param hi2c  Pointer to I2C instance.
+ * @param huart Pointer to USART instance.
+ */
 void MAX30100_Init(I2C_HandleTypeDef *hi2c, UART_HandleTypeDef *huart);
+
+
+/** @brief Function for setting default configuration of sensor. */
 void MAX30100_Default_Config(void);
+
+/**
+ * @brief Function for getting IR and RED raw date from ring buffer.
+ *
+ * @param ir  Pointer to IR raw value.
+ * @param red Pointer to RED raw value.
+ *
+ * @return true if getting was successful, false otherwise
+ */
 bool MAX30100_Data_Get(uint16_t *ir, uint16_t *red);
+
+/**
+ * @brief Function for adding raw data to the algorithms.
+ *
+ * @param ir_val  Raw data of IR light.
+ * @param red_val Raw data of RED light.
+ */
 void MAX30100_Sample_Add(uint16_t ir_val, uint16_t red_val);
+
+/** @brief Function for completing global HR and SpO2 values after measurement. */
 void MAX30100_Measurement_Complete(void);
+
+/** @brief Function for sending HR and SpO2 values via USART. */
 void MAX30100_HR_SpO2_Send(void);
+
+/** @brief Function to handle the interrupt. */
 void MAX30100_Interrupt_Handler(void);
 
 #endif /* INC_MAX30100_H_ */
